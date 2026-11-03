@@ -1,0 +1,90 @@
+```java
+import java.util.*;
+
+public class HuffmanCoding {
+
+    // Represents a node in the Huffman tree
+    static class Node {
+        char ch;
+        int freq;
+        int sequence;
+
+        Node left, right;
+
+        Node(char ch, int freq, int sequence) {
+            this.ch = ch;
+            this.freq = freq;
+            this.sequence = sequence;
+        }
+    }
+
+    // Generate Huffman codes
+    static void printCodes(Node root, String code) {
+
+        if (root == null)
+            return;
+
+        // Check whether the node is a leaf
+        if (root.left == null && root.right == null) {
+
+            System.out.println(root.ch + ": " +
+                    (code.isEmpty() ? "0" : code));
+
+            return;
+        }
+
+        // Left = 0, Right = 1
+        printCodes(root.left, code + "0");
+        printCodes(root.right, code + "1");
+    }
+
+    public static void main(String[] args) {
+
+        char[] chars = {'A', 'S', 'D', 'C'};
+        int[] freq = {6, 7, 3, 3};
+
+        int sequence = 0;
+
+        // Sort by frequency, then character, then insertion sequence
+        PriorityQueue<Node> pq = new PriorityQueue<>(
+            Comparator.comparingInt((Node n) -> n.freq)
+                .thenComparingInt(n -> n.ch)
+                .thenComparingInt(n -> n.sequence)
+        );
+
+        // Create a node for every character
+        for (int i = 0; i < chars.length; i++) {
+
+            pq.add(new Node(chars[i], freq[i], sequence++));
+        }
+
+        // Build the Huffman tree
+        while (pq.size() > 1) {
+
+            // Remove two nodes with minimum frequency
+            Node left = pq.poll();
+            Node right = pq.poll();
+
+            // Create a parent node
+            Node parent = new Node(
+                '\0',
+                left.freq + right.freq,
+                sequence++
+            );
+
+            parent.left = left;
+            parent.right = right;
+
+            // Insert the parent back into the queue
+            pq.add(parent);
+        }
+
+        // Generate and print Huffman codes
+        System.out.println("Huffman Codes:");
+
+        Node root = pq.poll();
+
+        printCodes(root, "");
+    }
+}
+```
