@@ -1,0 +1,104 @@
+```java
+import java.util.*;
+
+public class HuffmanCoding {
+
+    static class Node {
+        char ch;
+        int freq;
+        Node left, right;
+
+        Node(char ch, int freq) {
+            this.ch = ch;
+            this.freq = freq;
+        }
+    }
+
+    // Store character and its Huffman code
+    static void generateCodes(Node 
+root, String code,
+                              Map<Character, String> codes) {
+
+        if (root == null) return;
+
+        if (root.left == null && root.right == null) {
+            codes.put(root.ch, code.isEmpty() ? "0" : code);
+            System.out.println(root.ch + ": " + codes.get(root.ch));
+            return;
+        }
+
+        generateCodes(root.left, code + "0", codes);
+        generateCodes(root.right, code + "1", codes);
+    }
+
+    // Encode the complete input string
+    static String encode(String input,
+                         Map<Character, String> codes) {
+
+        StringBuilder result = new StringBuilder();
+
+        for (char ch : input.toCharArray()) {
+            if (!codes.containsKey(ch)) {
+                throw new IllegalArgumentException(
+                    "Character not present in Huffman tree: " + ch
+                );
+            }
+
+            result.append(codes.get(ch));
+        }
+
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+
+        char[] chars = {'A', 'B', 'C', 'D', 'E', 'F'};
+        int[] freq = {5, 9, 12, 13, 16, 45};
+
+        PriorityQueue<Node> pq =
+            new PriorityQueue<>(Comparator.comparingInt(n -> n.freq));
+
+        // Create leaf nodes
+        for (int i = 0; i < chars.length; i++) {
+            pq.add(new Node(chars[i], freq[i]));
+        }
+
+        // Build Huffman tree
+        while (pq.size() > 1) {
+
+            Node left = pq.poll();
+            Node right = pq.poll();
+
+            Node parent = new Node('\0',
+                    left.freq + right.freq);
+
+            parent.left = left;
+            parent.right = right;
+
+            pq.add(parent);
+        }
+
+        Node root = pq.poll();
+
+        // Generate Huffman codes
+        Map<Character, String> codes = new HashMap<>();
+
+        System.out.println("Huffman Codes:");
+        generateCodes(root, "", codes);
+
+        // Take input string
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("\nEnter a string: ");
+        String input = sc.nextLine();
+
+        // Encode input string
+        String encoded = encode(input, codes);
+
+        System.out.println("Original String: " + input);
+        System.out.println("Huffman Encoded String: " + encoded);
+
+        sc.close();
+    }
+}
+```
