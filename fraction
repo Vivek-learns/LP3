@@ -1,0 +1,50 @@
+
+import java.util.*;
+
+public class FractionalKnapsack {
+
+    public static void main(String[] args) {
+
+        double[] weight = {10, 20, 30};
+        double[] profit = {60, 100, 120};
+        double capacity = 50;
+
+        int n = weight.length;
+
+        // Calculate profit/weight ratio
+        double[][] items = new double[n][3];
+
+        for (int i = 0; i < n; i++) {
+            items[i][0] = weight[i];
+            items[i][1] = profit[i];
+            items[i][2] = profit[i] / weight[i];
+        }
+
+        // Sort items by ratio in descending order
+        Arrays.sort(items, (a, b) ->
+            Double.compare(b[2], a[2]));
+
+        double totalProfit = 0;
+
+        // Select items according to capacity
+        for (int i = 0; i < n; i++) {
+
+            if (capacity == 0)
+                break;
+
+            // Take the complete item
+            if (items[i][0] <= capacity) {
+                capacity -= items[i][0];
+                totalProfit += items[i][1];
+            }
+
+            // Take a fraction of the item
+            else {
+                totalProfit += items[i][2] * capacity;
+                capacity = 0;
+            }
+        }
+
+        System.out.println("Maximum Profit: " + totalProfit);
+    }
+}
